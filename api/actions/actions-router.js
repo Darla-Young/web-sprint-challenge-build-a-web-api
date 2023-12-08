@@ -1,8 +1,6 @@
 const express = require('express')
 const Actions = require('./actions-model')
-const { get } = require('../projects/projects-model')
 const { check400, action404 } = require('./actions-middlware')
-
 const router = express.Router()
 
 router.get('/', (req, res) => {
@@ -16,12 +14,9 @@ router.get('/', (req, res) => {
   })
 })
 
-router.get('/:id', (req, res) => {
+router.get('/:id', action404, (req, res) => {
   Actions.get(req.params.id)
-  .then(action => {
-    if (!action) res.status(404).json({message: "cannot find action"})
-    else res.json(action)
-  })
+  .then(action => res.json(action))
   .catch(err => {
     res.status(500).json({
       err: err.message,
@@ -55,7 +50,7 @@ router.put('/:id', check400, action404, (req, res) => {
 
 router.delete('/:id', action404, async (req, res) => {
   Actions.remove(req.params.id)
-  .then(() => res.status(200).json({message: "action removed"}))
+  .then(() => res.json())
   .catch(err => {
     res.status(500).json({
       err: err.message,
