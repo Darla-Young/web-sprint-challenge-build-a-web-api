@@ -1,18 +1,11 @@
 const express = require('express')
 const Projects = require('./projects-model')
-/*
-  get - id || null - project || [projects]
-  insert - project - newProject
-  update - id, changes - updatedResource || null (if no id found)
-  remove - id - # of records deleted
-  getProjectActions - projectId - actions
-*/
 
 // const {  } = require('./projects-middleware')
 
 const router = express.Router()
 
-router.get('/api/projects', (req, res) => {
+router.get('/', (req, res) => {
   Projects.get()
   .then(projects => res.json(projects))
   .catch(err => {
@@ -23,10 +16,10 @@ router.get('/api/projects', (req, res) => {
   })
 })
 
-router.get('/api/projects/:id', (req, res) => {
+router.get('/:id', (req, res) => {
   Projects.get(req.params.id)
   .then(project => {
-    if (!project) res.status(404)
+    if (!project) res.status(404) // bug
     else res.json(project)
   })
   .catch(err => {
@@ -37,9 +30,9 @@ router.get('/api/projects/:id', (req, res) => {
   })
 })
 
-router.post('/api/projects', (req, res) => {
+router.post('/', (req, res) => {
   const {name, description} = req.body
-  if (!name || !description || Object.keys(req.body).length === 0) res.status(400)
+  if (!name || !description || Object.keys(req.body).length === 0) res.status(400) // bug
   else {
     Projects.insert(req.body)
     .then(newProject => res.json(newProject))
@@ -52,10 +45,10 @@ router.post('/api/projects', (req, res) => {
   }
 })
 
-router.put('/api/projects/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   const {name, description} = req.body
-  const existing = await Projects.get(res.params.id)
-  if (!name || !description || Object.keys(req.body).length === 0) res.status(400)
+  const existing = await Projects.get(req.params.id)
+  if (!name || !description || Object.keys(req.body).length === 0) res.status(400) // bug
   else if (!existing) res.status(404)
   else {
     Projects.update(req.params.id, req.body)
@@ -69,8 +62,8 @@ router.put('/api/projects/:id', async (req, res) => {
   }
 })
 
-router.delete('/api/projects/:id', async (req, res) => {
-  const existing = await Projects.get(res.params.id)
+router.delete('/:id', async (req, res) => {
+  const existing = await Projects.get(req.params.id)
   if (!existing) res.status(404)
   else {
     Projects.remove(req.params.id)
@@ -82,9 +75,9 @@ router.delete('/api/projects/:id', async (req, res) => {
       })
     })
   }
-})
+}) // bug
 
-router.get('/api/projects/:id/actions', async (req, res) => {
+router.get('/:id/actions', async (req, res) => {
   const project = await Projects.get(req.params.id)
   if (!project) res.status(404)
   else {
